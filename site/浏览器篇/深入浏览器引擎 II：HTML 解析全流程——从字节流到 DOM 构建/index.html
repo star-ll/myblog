@@ -1,0 +1,1141 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://www.yujin123.cn/%E6%B5%8F%E8%A7%88%E5%99%A8%E7%AF%87/%E6%B7%B1%E5%85%A5%E6%B5%8F%E8%A7%88%E5%99%A8%E5%BC%95%E6%93%8E%20II%EF%BC%9AHTML%20%E8%A7%A3%E6%9E%90%E5%85%A8%E6%B5%81%E7%A8%8B%E2%80%94%E2%80%94%E4%BB%8E%E5%AD%97%E8%8A%82%E6%B5%81%E5%88%B0%20DOM%20%E6%9E%84%E5%BB%BA/">
+      
+      
+        <link rel="prev" href="../%E6%B7%B1%E5%85%A5%E6%B5%8F%E8%A7%88%E5%99%A8%E5%BC%95%E6%93%8E%20I%EF%BC%9A%E4%BB%8E%E5%A4%9A%E8%BF%9B%E7%A8%8B%E6%9E%B6%E6%9E%84%E5%88%B0%E6%B8%B2%E6%9F%93%E5%BC%95%E6%93%8E/">
+      
+      
+        <link rel="next" href="../%E6%B7%B1%E5%85%A5%E6%B5%8F%E8%A7%88%E5%99%A8%E5%BC%95%E6%93%8E%20III%EF%BC%9AChromium%E5%88%86%E5%B1%82%E5%90%88%E6%88%90%20vs%20Firefox%20WebRender%E7%9A%84GPU%E9%9D%A9%E5%91%BD/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.17">
+    
+    
+      
+        <title>深入浏览器引擎 II：HTML 解析全流程——从字节流到 DOM 构建 - 余烬的个人博客</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.7e37652d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#iihtml-dom" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="余烬的个人博客" class="md-header__button md-logo" aria-label="余烬的个人博客" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            余烬的个人博客
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              深入浏览器引擎 II：HTML 解析全流程——从字节流到 DOM 构建
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="余烬的个人博客" class="md-nav__button md-logo" aria-label="余烬的个人博客" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    余烬的个人博客
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    浏览器篇
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            浏览器篇
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E6%B7%B1%E5%85%A5%E6%B5%8F%E8%A7%88%E5%99%A8%E5%BC%95%E6%93%8E%20I%EF%BC%9A%E4%BB%8E%E5%A4%9A%E8%BF%9B%E7%A8%8B%E6%9E%B6%E6%9E%84%E5%88%B0%E6%B8%B2%E6%9F%93%E5%BC%95%E6%93%8E/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    深入浏览器引擎 I：从多进程架构到渲染引擎
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    深入浏览器引擎 II：HTML 解析全流程——从字节流到 DOM 构建
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    深入浏览器引擎 II：HTML 解析全流程——从字节流到 DOM 构建
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#html" class="md-nav__link">
+    <span class="md-ellipsis">
+      HTML解析器
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="HTML解析器">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      字节流
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      预处理
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      标记化（词法分析）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      树构造（语法分析）
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="树构造（语法分析）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#open-element-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      开放元素栈（Open Element Stack）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#insertion-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      插入模式（Insertion Modes）
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      优化
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="优化">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      异常兼容机制
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#streaming-parsing" class="md-nav__link">
+    <span class="md-ellipsis">
+      流式处理（Streaming Parsing）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      预解析器
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      阻塞
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="阻塞">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#script" class="md-nav__link">
+    <span class="md-ellipsis">
+      Script阻塞
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stylesheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      StyleSheet 阻塞
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#html_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      HTML 解析器的应用
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E6%B7%B1%E5%85%A5%E6%B5%8F%E8%A7%88%E5%99%A8%E5%BC%95%E6%93%8E%20III%EF%BC%9AChromium%E5%88%86%E5%B1%82%E5%90%88%E6%88%90%20vs%20Firefox%20WebRender%E7%9A%84GPU%E9%9D%A9%E5%91%BD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    深入浏览器引擎 III：Chromium分层合成 vs Firefox WebRender的GPU革命
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E6%B7%B1%E5%85%A5%E6%B5%8F%E8%A7%88%E5%99%A8%E5%BC%95%E6%93%8E%20IV%EF%BC%9AV8%20%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    深入浏览器引擎 IV：V8 垃圾回收机制
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    深入JavaScript篇
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            深入JavaScript篇
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E6%B7%B1%E5%85%A5JavaScript%E7%AF%87/%E6%B7%B1%E5%85%A5JavaScript%20I%EF%BC%9A%E4%BB%8E%E8%A7%84%E8%8C%83%E4%B8%AD%E7%9C%8BJavaScript%E8%BF%90%E8%A1%8C%E6%97%B6%E6%9C%BA%E5%88%B6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    深入JavaScript I：从规范中看JavaScript运行时机制
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#html" class="md-nav__link">
+    <span class="md-ellipsis">
+      HTML解析器
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="HTML解析器">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      字节流
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      预处理
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      标记化（词法分析）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      树构造（语法分析）
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="树构造（语法分析）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#open-element-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      开放元素栈（Open Element Stack）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#insertion-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      插入模式（Insertion Modes）
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      优化
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="优化">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      异常兼容机制
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#streaming-parsing" class="md-nav__link">
+    <span class="md-ellipsis">
+      流式处理（Streaming Parsing）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      预解析器
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      阻塞
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="阻塞">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#script" class="md-nav__link">
+    <span class="md-ellipsis">
+      Script阻塞
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stylesheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      StyleSheet 阻塞
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#html_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      HTML 解析器的应用
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="iihtml-dom">深入浏览器引擎 II：HTML 解析全流程——从字节流到 DOM 构建</h1>
+<h2 id="html">HTML解析器</h2>
+<p>前端的核心在于 HTML、CSS 和 JavaScript，这三者共同构成了现代前端技术体系。其中，HTML 作为入口文件通常首先被浏览器请求加载，因此，浏览器渲染页面的首要任务就是解析 HTML 文件。无论浏览器采用何种渲染引擎，都需要遵循 HTML 规范。按照 HTML 解析器的规范，HTML 解析器会将 HTML 字节流转换为 DOM 树，这一过程主要经历了以下步骤：</p>
+<p><img alt="image.png" src="https://note-cdn.tongyi.com/note/dc5e53bad7c4b3a57997f8224c4fb9fd/iqDE4y4tFbXXsMcw/8cb83b64629049ae9a25018af8165992/image.png" /></p>
+<h3 id="_1">字节流</h3>
+<p>当我们访问一个页面时，本质上是完成了一次服务器与客户端之间的交互。在B/S架构中，浏览器作为客户端，通过计算机网络协议与服务器进行数据传输。在计算机网络层面，浏览器首先通过三次握手建立TCP连接，随后基于HTTP协议发送页面请求。服务器接收到请求后进行处理并返回响应，浏览器则负责解析响应内容。在此过程中，页面文件（即HTML文件）被<strong>编码</strong>成字节流的形式从服务器传输到浏览器。</p>
+<p>在上面所述的过程中，HTML文件以字节流的形式传输到浏览器，浏览器第一步的工作是<strong>解码</strong>字节流，也就是将字节流重新转换成HTML文件源代码，即将字节流转换为字符流。解码前需要确定编码格式，因为不同的编码格式对应不同的字符集。常见的编码格式包括UTF-8、GBK、GB2312等。浏览器会通过一套编码检测机制来确定字节流的编码格式，例如通过HTTP响应头中的`Content-Type`字段获取编码信息。</p>
+<h3 id="_2">预处理</h3>
+<p>在正式处理字符流前需要先对齐进行预处理，预处理的核心流程是规范化换行符（normalize newlines），这是由于不同的操作系统对换行符的定义不同。</p>
+<table>
+<thead>
+<tr>
+<th><strong>操作系统</strong></th>
+<th><strong>换行符</strong></th>
+<th><strong>说明</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Linux</td>
+<td><code>\n</code></td>
+<td>使用 LF（Line Feed，换行符）表示换行。ASCII 编码为 10。</td>
+</tr>
+<tr>
+<td>Windows</td>
+<td><code>\r\n</code></td>
+<td>使用 CRLF（Carriage Return + Line Feed，回车+换行）表示换行。ASCII 编码为 13 和 10 的组合。</td>
+</tr>
+<tr>
+<td>macOS (旧版)</td>
+<td><code>\r</code></td>
+<td>早期的 macOS（基于经典 Mac OS）使用 CR（Carriage Return，回车符）表示换行。ASCII 编码为 13。</td>
+</tr>
+<tr>
+<td>macOS (现代)</td>
+<td><code>\n</code></td>
+<td>现代 macOS（基于 Unix 的 macOS X 及之后版本）与 Linux 一致，使用 LF 表示换行。</td>
+</tr>
+</tbody>
+</table>
+<p>HTML规范中对规范换行符的操作很简单，主要是以下步骤：</p>
+<ol>
+<li>替换所有\r\n为\n</li>
+<li>替换所有的\r为\n</li>
+</ol>
+<blockquote>
+<p>To normalize newlines in a string, replace every U+000D CR U+000A LF code point pair with a single U+000A LF code point, and then replace every remaining U+000D CR code point with a U+000A LF code point.</p>
+</blockquote>
+<h3 id="_3">标记化（词法分析）</h3>
+<p>在完成字节流的转换与预处理后，HTML解析过程进入了标记化（Tokenization）阶段。标记化类似于编译原理中的词法分析，在此过程中，HTML解析器会将字符流逐步转换为一系列的Token。T<strong>oken是词法分析的输出结果，是描述HTML文档中基本结构单元。</strong></p>
+<p>HTML作为一种具有特定语法规则的语言，其解析依赖于这些规则。例如，一个标准的元素节点总是以<code>&lt;</code>符号开始，并跟随标签名（通常由英文字母组成），接着可以有若干个由空格分隔的属性。若<code>&lt;</code>后紧跟的是<code>!</code>，则这可能表示一个HTML注释或DOCTYPE声明等特殊情况。</p>
+<p>整个解析过程通过定义多种状态来实现。每次读取一个字符作为“当前输入字符”，并考虑其后的一个字符作为“下一个输入字符”。依据当前字符的特征，解析器会进入相应状态，并继续检查后续字符，以此类推，直到遇到错误或文件结束符（EOF）。这种机制使得解析器可以在不同状态下灵活切换，确保正确识别各种HTML结构。</p>
+<p>以简单的HTML代码示例 <code>&lt;div&gt;1&lt;/div&gt;</code> 来说明这一过程：</p>
+<ol>
+<li>当前输入字符是<code>&lt;</code>，解析器识别到这是一个标签的开始，进入“开放标签开始状态”；</li>
+<li>将下一个输入字符（即<code>d</code>）设为新的当前输入字符，准备进一步解析；</li>
+<li>因为当前字符是<code>d</code>而非<code>!</code>，所以确定这是一个普通标签而非注释，继续读取直至标签名完整，此时已确认为<code>div</code>；</li>
+<li>遇到<code>&gt;</code>，表明标签定义结束，进入“开放标签结束状态”。由于未发现自闭合标签的形式<code>/&gt;</code>，预期后续应有一个对应的闭合标签；</li>
+<li>接下来读取到数字<code>1</code>，进入“文本状态”，处理标签内的文本内容；</li>
+<li>再次遇到<code>&lt;</code>，检查其后的字符为<code>/</code>，判定这是闭合标签的开始，进入“闭合标签开始状态”；</li>
+<li>按照相同逻辑依次处理字符<code>d</code>, <code>i</code>, <code>v</code>，最终在遇到第二个<code>&gt;</code>时，确认闭合标签解析完毕，进入“闭合标签结束状态”。</li>
+</ol>
+<p>最终生成的Token序列如下：</p>
+<pre><code class="language-javascript">[
+  { type: &quot;StartTag&quot;, name: &quot;div&quot; },  // &lt;div&gt;
+  { type: &quot;Character&quot;, data: &quot;1&quot; },   // 1
+  { type: &quot;EndTag&quot;, name: &quot;div&quot; }     // &lt;/div&gt;
+]
+</code></pre>
+<h3 id="_4">树构造（语法分析）</h3>
+<p>树构造阶段（Tree Construction）的输入是标记化的输出，输出就是文档对象模型DOM树，也就是说树构造阶段其实就是构造DOM树。树构造阶段类似于编译原理中的语法分析。树构造过程通过<strong>栈结构</strong>（开放元素栈）和<strong>状态机</strong>动态构建节点间的父子关系，最终形成完整的文档对象模型。</p>
+<h4 id="open-element-stack">开放元素栈（Open Element Stack）</h4>
+<p>栈用于跟踪当前未闭合的标签节点。当解析到开始标签Token时，创建对应元素节点并入栈；遇到结束标签Token时，将栈顶元素出栈，完成闭合操作。</p>
+<h4 id="insertion-modes">插入模式（Insertion Modes）</h4>
+<p>插入模式 是 HTML 解析器的核心机制之一，它决定了当前解析器处于哪种上下文，从而影响如何处理后续的 Token。插入模式本质上是一个 状态机，不同模式对应不同的 DOM 构建规则。HTML规范定义了12种插入模式（如<code>in body</code>、<code>in table</code>、<code>in head</code>等），用于处理不同上下文环境下的解析规则。例如：<code>&lt;table&gt;</code>标签会触发"in table"模式，确保表格内元素（<code>&lt;tr&gt;</code>、<code>&lt;td&gt;</code>）按特定规则解析；<code>&lt;svg&gt;</code>或<code>&lt;math&gt;</code>标签会切换至"in foreign content"模式，启用XML解析规则。</p>
+<p>我们仍然以<code>&lt;div&gt;1&lt;/div&gt;</code>为例来说明这树构造过程：
+1. 解析器接收<code>TokenStart Tag: &lt;div&gt;</code>，创建一个HTMLDivElement节点，节点入栈（开放元素栈，下同）。
+2. 解析器接收Token Character: "1"，创建一个内容是1的Text节点，设置为栈顶节点（即前面的HTMLDivElement节点）的子节点。
+3. 解析器接收<code>Token End Tag: &lt;/div&gt;</code>，栈顶节点出栈。</p>
+<p>最终生成的DOM结构如下：</p>
+<pre><code class="language-plaintext">Document
+└── html
+    └── body
+        └── div
+            └── &quot;1&quot;
+</code></pre>
+<h2 id="_5">优化</h2>
+<p>HTML解析器在异常处理、性能等方面做了许多优化。</p>
+<h4 id="_6">异常兼容机制</h4>
+<p>HTML解析器具备强大的容错能力，可自动修复常见语法错误。</p>
+<p>比如：
+1. 缺少闭合标签，如 <code>&lt;p&gt;&lt;span&gt;123&lt;/p&gt;</code>
+2. 嵌套错误，如 <code>&lt;b&gt;1&lt;p&gt;2&lt;/b&gt;3&lt;/p&gt;</code></p>
+<h4 id="streaming-parsing">流式处理（Streaming Parsing）</h4>
+<p>浏览器采用**流式解析**策略：无需等待整个HTML文件下载完成，而是边下载边解析：
+1. 网络线程持续接收字节流并传递给解析器。 
+2. 解析器逐块处理Token并构建部分DOM树。 
+3. 遇到 <code>script</code> 标签时暂停 HTML解析，优先加载并执行脚本（除非标记<code>async/defer</code>）。 
+4. 构建的DOM分片可提前触发渲染，加速首屏显示。</p>
+<h3 id="_7">预解析器</h3>
+<p>HTML 解析器规则中还定义了<strong>预测性 HTML 解析器（Speculative HTML parsing）</strong>，也就是我们常说的<strong>预解析器</strong>。根据 HTML 规范，每个 HTML 解析器都可以有一个 HTML 预解析器，它会和 HTML 解析器一起工作。</p>
+<p><strong>预解析器的主要职责是推测性去加载 HTML 可能需要的资源</strong>（如图片、样式表等）。它不仅会在 HTML 解析器正常工作时去推测性的加载资源（例如 HTML 解析器在为 <code>&lt;img</code> 创建 token 时，预加载器就会推测性的加载图像资源），也会在 HTML 解析器被 <code>script</code> 阻塞时，去加载后面可能用到的资源。</p>
+<blockquote>
+<p>User agents may implement an optimization, as described in this section, to speculatively fetch resources that are declared in the HTML markup while the HTML parser is waiting for a pending parsing-blocking script to be fetched and executed, or during normal parsing, at the time an element is created for a token. </p>
+</blockquote>
+<p>通过预加载器，HTML 能够尽快地加载所需要的资源，尤其是在 HTML 解析器被阻塞时（例如遇到Script），可以尽快加载后面的资源，提高渲染速度。</p>
+<p>不过需要注意的是，预解析器只会加载文档中的资源。这意味着通过 JS 创建的 <code>&lt;img&gt;</code> 和 <code>&lt;script&gt;</code> 等元素节点所需要加载的资源不会被预解析器加载。</p>
+<h2 id="_8">阻塞</h2>
+<h3 id="script">Script阻塞</h3>
+<p>HTML 规范将 script 分为<strong>经典Script（classic script）</strong> 和<strong>模块Script（module script）</strong>。</p>
+<pre><code class="language-html">&lt;!-- 经典Script --&gt;
+&lt;script&gt; /* 內联js */ &lt;/script&gt;
+&lt;script scr=&quot;xxx&quot;&gt; &lt;/script&gt;
+
+&lt;!-- 模块Script --&gt;
+&lt;script type=&quot;module&quot;&gt; /* 內联js */ &lt;/script&gt;
+&lt;script scr=&quot;xxx&quot; type=&quot;module&quot;&gt; &lt;/script&gt;
+</code></pre>
+<p>经典Script 的加载和执行通常会阻塞 HTML 解析，除非设置了 <code>async</code> 或 <code>async</code> 属性，两种属性导致经典Script的加载方式会变为并行加载，这能避免阻塞 HTML 解析。</p>
+<p>模块Script 默认情况下延迟执行，即并行加载，在页面解析完毕后执行，因此手动对模块Script设置 <code>defer</code> 属性是没有任何效果的。如果设置了 async 属性，那么模块Script 则仍然是并行加载，但是会在 Script 可用时立即执行。</p>
+<table>
+<thead>
+<tr>
+<th>经典 Script</th>
+<th>加载</th>
+<th>执行</th>
+<th>加载是否阻塞 HTML解析</th>
+<th>执行是否阻塞 HTML解析</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;script async&gt;</code></td>
+<td>并行</td>
+<td>脚本可用时</td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>&lt;script defer&gt;</code></td>
+<td>并行</td>
+<td>页面解析完毕后</td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>&lt;script&gt;</code></td>
+<td>立即</td>
+<td>脚本可用时</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>&lt;script type="module"&gt;</code></td>
+<td>并行</td>
+<td>页面解析完毕后执行</td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>&lt;script type="module" async&gt;</code></td>
+<td>并行</td>
+<td>在可用时立即执行</td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>&gt;  注意：根据 HTML 规范，浏览器会在脚本可用时就立即执行，而不是必须等到 JS脚本全部加载完毕。</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>下面示意图对以上内容进行了总结：</p>
+<p>![[asyncdefer.png]]</p>
+<h3 id="stylesheet">StyleSheet 阻塞</h3>
+<p><a href="https://html.spec.whatwg.org/#link-type-stylesheet">HTML规范</a>中明确规定了 HTML 解析器需要如何处理引入外部样式表的 link 元素：</p>
+<blockquote>
+<p>A link element of this type is <a href="https://html.spec.whatwg.org/#implicitly-potentially-render-blocking">implicitly potentially render-blocking</a> if the element was created by its <a href="https://dom.spec.whatwg.org/#concept-node-document">node document</a> 's parser.</p>
+</blockquote>
+<p>这句话有几个关键术语：</p>
+<table>
+<thead>
+<tr>
+<th>术语</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A link element of this type（指具有<code>rel=stylesheet</code>的<code>&lt;link&gt;</code>元素）</td>
+<td>指具有<code>rel=stylesheet</code>的<code>&lt;link&gt;</code>元素（即CSS样式表链接）</td>
+</tr>
+<tr>
+<td>created by its node document 's parser（由node文档解析器创建）</td>
+<td>由 HTML 解析器创建的 Link 元素节点，而不是 JS 动态插入的。</td>
+</tr>
+<tr>
+<td>implicitly potentially render-blocking（隐式潜在的渲染阻塞）</td>
+<td>可能（但不一定）阻塞渲染，需要浏览器按规则处理</td>
+</tr>
+<tr>
+<td>这句话的意思是：<strong>当文档解析器在解析HTML时遇到 <code>&lt;link rel="stylesheet"&gt;</code> 元素，这个样式表资源会被视为潜在的渲染阻塞资源，浏览器可能需要暂停渲染直到该样式表加载并解析完成</strong>。</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>此外，<a href="[HTML Standard](https://html.spec.whatwg.org/#interactions-of-styling-and-scripting)">HTML 规范</a> 还明确了 <code>stylesheet</code> 阻塞 script 执行的场景，原文如下：</p>
+<blockquote>
+<p>If the style sheet referenced no other resources (e.g., it was an internal style sheet given by a style element with no @import rules), then the style rules must be immediately made available to script; otherwise, the style rules must only be made available to script once the event loop reaches its update the rendering step.</p>
+<p>An element el in the context of a Document of an HTML parser or XML parser contributes a script-blocking style sheet if all of the following are true:</p>
+<ol>
+<li>el was created by that Document's parser.</li>
+<li>el is either a style element or a link element that was an external resource link that contributes to the styling processing model when the el was created by the parser.</li>
+<li>el's media attribute's value matches the environment.</li>
+<li>el's style sheet was enabled when the element was created by the parser.</li>
+<li>The last time the event loop reached step 1, el's root was that Document.</li>
+<li>The user agent hasn't given up on loading that particular style sheet yet. A user agent may give up on loading a style sheet at any time.</li>
+</ol>
+</blockquote>
+<p>根据规范，如果没有引用其他资源（例如 <code>@import</code>），那么 style 会立即可用于 script 脚本，否则需要等到<strong>事件循环的"更新渲染"阶段</strong>才可用。</p>
+<p>如果满足下面所有情况，那么 Script 执行将会被阻塞。</p>
+<table>
+<thead>
+<tr>
+<th>条件序号</th>
+<th>必要条件描述</th>
+<th>示例（满足）</th>
+<th>示例（不满足）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>由文档解析器创建的元素</td>
+<td>html 中的 <code>style</code> 标签</td>
+<td>js 动态创建的 <code>style</code> 元素节点</td>
+</tr>
+<tr>
+<td>2</td>
+<td>HTML 文档中的 <code>style</code> 标签或 <code>link</code> 标签引入的样式表(rel="stylesheet")，而不是 JS 动态创建的</td>
+<td><code>&lt;style&gt;</code>或<code>&lt;link rel="stylesheet" href="a.css"&gt;</code></td>
+<td><code>&lt;link rel="preload" href="a.css"&gt;</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td>media属性匹配当前环境</td>
+<td><code>&lt;style&gt;</code> <code>media</code> 属性默认时 auto，与 <code>&lt;style media="auto"&gt;</code> 等价</td>
+<td><code>&lt;style media="print"&gt;</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td>样式表已启用</td>
+<td>· <code>&lt;style&gt;</code></td>
+<td><code>&lt;style disabled&gt;</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td>属于当前文档</td>
+<td>未调用 <code>element.remove()</code></td>
+<td>游离的元素节点</td>
+</tr>
+<tr>
+<td>6</td>
+<td>浏览器未放弃加载</td>
+<td>正常加载中的样式表</td>
+<td>404 或其他错误导致加载失败</td>
+</tr>
+</tbody>
+</table>
+<h2 id="html_1">HTML 解析器的应用</h2>
+<p>学习HTML解析规范的意义不仅在于了解浏览器内部工作运行方式，更有助于我们了解现代前端框架的底层工作原理，例如Vue的模板语法本质上就是对HTML语法的增强，其底层实现方式是对HTML解析流程的扩展，简要来说由以下几个步骤：</p>
+<pre><code class="language-plaintext">模板语法
+  ↓   (词法分析、语法分析)
+Template AST
+  ↓   (transform)
+Codegen
+  ↓   (遍历树生成)
+渲染函数
+</code></pre>
+<p>笔者曾基于对HTML解析规则和Vue模板解析的理解，开发了一款Markdown编译器。其底层工作原理在很大程度上借鉴了上述思想，有兴趣的读者可以深入探究一下。</p>
+<h1 id="_9">参考</h1>
+<p>https://html.spec.whatwg.org/multipage/parsing.html</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.92b07e13.min.js"></script>
+      
+    
+  </body>
+</html>

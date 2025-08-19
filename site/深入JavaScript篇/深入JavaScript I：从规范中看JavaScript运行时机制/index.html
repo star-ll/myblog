@@ -1,0 +1,1056 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://www.yujin123.cn/%E6%B7%B1%E5%85%A5JavaScript%E7%AF%87/%E6%B7%B1%E5%85%A5JavaScript%20I%EF%BC%9A%E4%BB%8E%E8%A7%84%E8%8C%83%E4%B8%AD%E7%9C%8BJavaScript%E8%BF%90%E8%A1%8C%E6%97%B6%E6%9C%BA%E5%88%B6/">
+      
+      
+        <link rel="prev" href="../../%E6%B5%8F%E8%A7%88%E5%99%A8%E7%AF%87/%E6%B7%B1%E5%85%A5%E6%B5%8F%E8%A7%88%E5%99%A8%E5%BC%95%E6%93%8E%20IV%EF%BC%9AV8%20%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6/">
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.17">
+    
+    
+      
+        <title>深入JavaScript I：从规范中看JavaScript运行时机制 - 余烬的个人博客</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.7e37652d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="余烬的个人博客" class="md-header__button md-logo" aria-label="余烬的个人博客" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            余烬的个人博客
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              深入JavaScript I：从规范中看JavaScript运行时机制
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="余烬的个人博客" class="md-nav__button md-logo" aria-label="余烬的个人博客" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    余烬的个人博客
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    浏览器篇
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            浏览器篇
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E6%B5%8F%E8%A7%88%E5%99%A8%E7%AF%87/%E6%B7%B1%E5%85%A5%E6%B5%8F%E8%A7%88%E5%99%A8%E5%BC%95%E6%93%8E%20I%EF%BC%9A%E4%BB%8E%E5%A4%9A%E8%BF%9B%E7%A8%8B%E6%9E%B6%E6%9E%84%E5%88%B0%E6%B8%B2%E6%9F%93%E5%BC%95%E6%93%8E/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    深入浏览器引擎 I：从多进程架构到渲染引擎
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E6%B5%8F%E8%A7%88%E5%99%A8%E7%AF%87/%E6%B7%B1%E5%85%A5%E6%B5%8F%E8%A7%88%E5%99%A8%E5%BC%95%E6%93%8E%20II%EF%BC%9AHTML%20%E8%A7%A3%E6%9E%90%E5%85%A8%E6%B5%81%E7%A8%8B%E2%80%94%E2%80%94%E4%BB%8E%E5%AD%97%E8%8A%82%E6%B5%81%E5%88%B0%20DOM%20%E6%9E%84%E5%BB%BA/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    深入浏览器引擎 II：HTML 解析全流程——从字节流到 DOM 构建
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E6%B5%8F%E8%A7%88%E5%99%A8%E7%AF%87/%E6%B7%B1%E5%85%A5%E6%B5%8F%E8%A7%88%E5%99%A8%E5%BC%95%E6%93%8E%20III%EF%BC%9AChromium%E5%88%86%E5%B1%82%E5%90%88%E6%88%90%20vs%20Firefox%20WebRender%E7%9A%84GPU%E9%9D%A9%E5%91%BD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    深入浏览器引擎 III：Chromium分层合成 vs Firefox WebRender的GPU革命
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E6%B5%8F%E8%A7%88%E5%99%A8%E7%AF%87/%E6%B7%B1%E5%85%A5%E6%B5%8F%E8%A7%88%E5%99%A8%E5%BC%95%E6%93%8E%20IV%EF%BC%9AV8%20%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    深入浏览器引擎 IV：V8 垃圾回收机制
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    深入JavaScript篇
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            深入JavaScript篇
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    深入JavaScript I：从规范中看JavaScript运行时机制
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    深入JavaScript I：从规范中看JavaScript运行时机制
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#execution-contexts-and-execution-contexts-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      执行栈与执行上下文（Execution Contexts and Execution Contexts Stack）
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#environment-records" class="md-nav__link">
+    <span class="md-ellipsis">
+      环境记录（Environment Records）
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      闭包
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      生成器函数
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#execution-contexts-and-execution-contexts-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      执行栈与执行上下文（Execution Contexts and Execution Contexts Stack）
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#environment-records" class="md-nav__link">
+    <span class="md-ellipsis">
+      环境记录（Environment Records）
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      闭包
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      生成器函数
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="_1">同步：执行栈与执行上下文</h1>
+<h2 id="execution-contexts-and-execution-contexts-stack">执行栈与执行上下文（Execution Contexts and Execution Contexts Stack）</h2>
+<p><strong>JavaScript 执行上下文（Execution Contexts）是 JavaScript 运行时的一种环境概念，包含当前代码运行的所有信息，执行栈（也称调用栈，全称执行上下文栈）时一种后进先出的数据结构，用于管理执行上下文，其栈顶生当前正在运行的执行上下文，两者共同配合实现 JavaScript 代码的运行。</strong>
+执行上下文有三种类型：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>函数执行上下文</td>
+<td>函数执行时会创建函数执行上下文，其包括参数、局部变量、this 等数据。</td>
+</tr>
+<tr>
+<td>全局执行上下文</td>
+<td>当执行 Script 或 Module 中的代码时会创建全局执行上下文，其包括全局对象等数据，通常被压在栈底。</td>
+</tr>
+<tr>
+<td>eval 执行上下文</td>
+<td>eval 执行时创建 eval 执行上下文，由于安全性问题，其使用的比较少。</td>
+</tr>
+</tbody>
+</table>
+<p>以一个简单的 JS 代码为例：</p>
+<pre><code class="language-html">&lt;script&gt;
+function fn(a){
+  // ...
+}
+fn()
+&lt;/script&gt;
+</code></pre>
+<p>JS 引擎执行上面这段代码过程：
+ 1. 执行到 script 时，创建全局执行上下文，并压入栈中。
+ 2. 执行 fn 函数时，创建函数执行上下文，压入栈中，此时函数执行上下文是栈顶，全局执行上下文是栈底。</p>
+<p>对于大部分函数来说（有一些函数例外，如闭包、生成器函数等），当函数执行时，JS 引擎会为其创建函数执行上下文，并压入执行上下文栈中，JS 引擎会执行执行栈栈顶的执行上下文，当执行完后，栈顶执行上下文会从执行栈中出栈，并被垃圾回收。</p>
+<p>执行上下文包括以下状态组件：
+- Code evaluation state：执行、暂停和恢复与此执行上下文关联的代码的计算所需的任何状态。
+- Function：如果是函数执行上下文文时，Function 字段的值是函数对象，否则值为 null。
+- Realm：领域记录，这里不展开。
+- ScriptOrModule：关联代码源自的 Module Record 或 Script Record。
+- LexicalEnvironment：词法环境记录，保存标识符与实际值的关系。
+- VariableEnvironment：变量环境记录，保存通过 var 声明的标识符与指的关系。
+- PrivateEnvironment：私有环境记录，用于类的私有变量中。</p>
+<h2 id="environment-records">环境记录（Environment Records）</h2>
+<p><strong>在执行上下文中，环境记录（Environment Records）扮演一个很重要的角色，它负责保存标识符与变量或函数实际值的关联关系</strong>。每个环境记录都有一个 <code>[[outerEnv]]</code> 的内部属性，指向外层环境记录，如果没有外层环境记录，则为 null。
+执行上下文中有三种环境记录：</p>
+<table>
+<thead>
+<tr>
+<th>执行上下文中的环境记录</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VariableEnvironment</td>
+<td>保存通过 var 声明的变量标识符与实际值之间的关联关系</td>
+</tr>
+<tr>
+<td>PrivateEnvironment</td>
+<td>保存私有变量标识符与实际值之间的关联关系，通常作用于类中</td>
+</tr>
+<tr>
+<td>LexicalEnvironment</td>
+<td>保存除了上面两种情况之外的标识符与实际值之间的关系</td>
+</tr>
+<tr>
+<td>可以用一段代码来描述：</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-javascript">function fn(a){
+  var va = 1
+  let b = 2
+  const c = 3
+}
+</code></pre>
+<p>在上面代码中，变量 va 保存在 <code>VariableEnvironment</code> 中，其他变量标识符保存在 <code>LexicalEnvironment</code> 中</p>
+<table>
+<thead>
+<tr>
+<th>环境记录</th>
+<th>标识符</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VariableEnvironment</td>
+<td>va</td>
+</tr>
+<tr>
+<td>LexicalEnvironment</td>
+<td>a、b、c</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-mermaid">
+sequenceDiagram
+
+全局上下文-&gt;&gt;函数上下文: fn()调用
+
+函数上下文--&gt;&gt;全局上下文: 执行完毕出栈
+
+</code></pre>
+<p><strong>环境记录可以看作是作用域在运行时的表现形式：当访问一个变量时，会从当前执行上下文的环境记录中进行查找，如果没有找到，则会通过环境记录的 <code>[[outerEnv]]</code> 属性访问到外层环境记录继续查找，这种机制就是我们常说的作用域链。</strong></p>
+<p>虽然所有执行上下文都有环境记录，但是实际上只有当前正在运行的执行上下文（即栈顶）中的环境记录才是“激活的”，也就是说 JS 只会直接操作栈顶执行上下文的环境记录，但是可以通过 <code>[[outerEnv]]</code> 属性访问到外层环境记录，从而访问到整个环境记录链。</p>
+<h2 id="_2">闭包</h2>
+<blockquote>
+<p>有权访问另一个函数作用域中的变量的函数称为闭包 
+                                  ——《JavaScript 高级程序设计第三版》</p>
+</blockquote>
+<p>前面提过：函数执行上下文入栈执行，执行完毕后出栈被 GC 垃圾回收，但是闭包比较特殊，我们以一段代码为例：</p>
+<pre><code class="language-javascript">function outerFn(){
+    let a = 1
+    return function innerFn(){
+        console.log(a)
+    }
+}
+
+const f = outerFn()
+f()
+</code></pre>
+<p>为了方便起见，我们统一称 <code>outerFn</code> 为外层函数，<code>innerFn</code> 为内层函数。对于闭包而言，当外层函数执行完毕后，内层函数仍然可以访问外层函数中的变量。</p>
+<p>这种现象是因为垃圾回收机制是采用"可达性"实现的，简单来说就是GC 会从一组<strong>根</strong>（执行上下文、DOM 跟节点、全局对象等）开始深度遍历，不能访问到的对象会被认为<strong>死对象</strong>从而被垃圾回收，<strong>但是对于闭包而言，当外层函数执行完毕后，其对应的执行上下文出栈销毁，但是内层函数执行上下文中的环境记录的 <code>[[outerEnv]]</code> 仍然保存着外层函数的环境记录，这也就导致了外层函数被引用的变量仍然是"可达的"，因此不会被垃圾回收。</strong></p>
+<p>我们可以手动“告知”JS 引擎，可以回收闭包中的环境记录了：</p>
+<pre><code class="language-javascript">const f = outerFn()
+f()
+
+f = null // 执行完毕后手动释放
+</code></pre>
+<h2 id="_3">生成器函数</h2>
+<p>另一个比较特殊的是生成器函数，生成器函数允许在函数执行过程中中断退出，并在之后重新恢复函数执行。</p>
+<p>JS 会在生成器函数执行时创建生成器函数执行上下文，生成器函数执行上下文也属于函数执行上下文，但是会多一个 generator 内部属性指向生成器对象。</p>
+<table>
+<thead>
+<tr>
+<th>生成器函数执行上下文组件</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>generator</td>
+<td>指向该函数执行上下文的生成器对象</td>
+</tr>
+</tbody>
+</table>
+<p>生成器函数能实现中断和恢复的核心在于<strong>执行上下文状态的完整保存与恢复</strong>。生成器函数执行时会创建一个生成器对象（GeneratorObject），当生成器函数执行遇到 <code>yield</code> 时，该生成器函数执行上下文从执行栈顶出栈，但是此时该执行上下文仍然会被生成器对象保存，当重新执行 <code>iter.next()</code> 时，生成器函数执行上下文重新入栈执行。</p>
+<table>
+<thead>
+<tr>
+<th>生成器对象组件</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GeneratorState</td>
+<td>生成器的状态</td>
+</tr>
+<tr>
+<td>GeneratorContext</td>
+<td>指向执行此生成器的执行上下文</td>
+</tr>
+<tr>
+<td>GeneratorBrand</td>
+<td>由 ECMAScript 源文本声明的生成器的 <code>[[GeneratorBrand]]</code> 始终为空。</td>
+</tr>
+<tr>
+<td>当生成器函数执行上下文（ExecutionContext）中断出栈后，生成器对象（GeneratorObject）中的 <code>[[GeneratorContext]]</code> 属性仍然保存着该执行上下文的引用，这是生成器执行上下文出栈后不会被销毁的关键原因。</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>此时生成器函数执行上下文的内存结构如下所示：</p>
+<pre><code class="language-mermaid">classDiagram
+  class GeneratorObject {
+    [[GeneratorState]]: String
+    [[GeneratorBrand]]: String
+    [[GeneratorContext]]: ExecutionContext
+    next(value) : IteratorResult
+  }
+
+  class ExecutionContext {
+    LexicalEnvironment
+    VariableEnvironment
+    InstructionPointer
+  }
+</code></pre>
+<p>用一段代码来解释这一过程：</p>
+<pre><code class="language-javascript">function* fn(){
+   yield 1 // 出栈，但是执行上下文不会被销毁
+   yield 2 // 出栈，但是执行上下文不会被销毁
+}
+
+const iter = fn() // 创建生成器对象
+iter.next() // 创建生成器函数执行上下文，入栈
+iter.next() // 生成器函数执行上下文重新入栈
+iter = null // 释放生成器对象，此时执行上下文将不可达，也会被垃圾回收
+</code></pre>
+<pre><code class="language-mermaid">
+stateDiagram
+
+[*] --&gt; suspendedStart
+
+suspendedStart --&gt; executing: next()
+
+executing --&gt; suspendedYield: yield
+
+suspendedYield --&gt; executing: next()
+
+executing --&gt; completed: return
+
+</code></pre>
+<h1 id="_4">异步：事件循环机制</h1>
+<h2 id="_5">基于事件循环的异步机制</h2>
+<p>JavaScript 的核心设计之一是<strong>单线程执行模型</strong>。这意味着它只有一个主线程（调用栈）来处理代码执行。然而，许多关键操作——如网络请求 (<code>fetch</code>)、文件读写 (<code>fs</code>)、用户交互 (<code>click</code>)、定时器 (<code>setTimeout</code>) 甚至复杂的计算——在完成时都可能需要显著的时间延迟。</p>
+<p><strong>如果主线程停下来 <em>等待</em> 这些耗时操作的完成，整个程序就会陷入停滞状态，即发生“阻塞”。</strong> 在前端，阻塞表现为页面无响应、动画卡顿、用户交互失效；在 Node.js 中，则会导致服务器无法处理其他并发请求。</p>
+<p>为了缓解这个问题，JavaScript 设计实现了<strong>事件循环机制</strong>。简单来说，事件循环机制就类似一个 <code>while(true)</code> 的永不停止的一个机制，当 JS 引擎执行到异步任务时，会将其委托给宿主环境（浏览器或者 Nodejs）执行，避免阻塞主线程，当异步任务执行完毕后宿主环境再将其回调入队到对应队列（任务队列或微任务队列）中，等到主线程空闲时，将其入栈到执行栈中执行。</p>
+<p>HTML 规范将异步任务分为宏任务和微任务，并且将存储宏任务的队列称为宏任务队列（task queue），存储微任务的队列称为微任务队列（microtask queue）。微任务优先级最高，一个事件循环周期内需要执行完所有微任务，而宏任务优先级较低，每个周期只执行一个宏任务，但是在一个周期中，宏任务执行时机早于微任务执行。</p>
+<blockquote>
+<p>在 HTML 规范中将任务分为了微任务(microtask)和任务（task），而非宏任务（macrotask），但是社区常将 task 称为宏任务，本文采用社区常见叫法，将 task 称为宏任务，task queue 称为宏任务队列。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>任务类型</th>
+<th>执行者</th>
+<th>优先级</th>
+<th>执行时机</th>
+<th>常见 API</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>task 宏任务</td>
+<td>通常是宿主环境</td>
+<td>低，一个周期只执行一个宏任务</td>
+<td>较早</td>
+<td>setTimeout、MessageChannel 等</td>
+</tr>
+<tr>
+<td>microtask 微任务</td>
+<td>通常是 JS</td>
+<td>高，一个周期执行完所有微任务</td>
+<td>较晚</td>
+<td>Promise、queueMicrotask 等</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_6">浏览器中的事件循环机制</h2>
+<h3 id="_7">事件循环类型</h3>
+<p>在浏览器中，根据运行环境，可以分为三种不同类型的事件循环</p>
+<table>
+<thead>
+<tr>
+<th>循环类型</th>
+<th>运行环境</th>
+<th>区别</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>window 事件循环（窗口事件循环）</td>
+<td>运行在主线程中</td>
+<td>负责渲染，可以操作 DOM</td>
+</tr>
+<tr>
+<td>worker 事件循环</td>
+<td>运行在 service worker、share worker 等工作线程中</td>
+<td>不可以操作 DOM</td>
+</tr>
+<tr>
+<td>worklet 事件循环</td>
+<td>运行在 worklet 线程中</td>
+<td>不可以操作 DOM</td>
+</tr>
+<tr>
+<td>&gt; worket 线程是一种专门用于图形和音频的工作线程，它比 web worker 线程更加轻量，通常被浏览器内部所使用。</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>三种事件循环机制中，窗口事件循环最为常见也最为重要，因为相较于另外两者，<strong>窗口事件循环负责控制浏览器渲染。</strong></p>
+<h3 id="_8">窗口事件循环</h3>
+<p>窗口事件循环一个周期的主要步骤如下所示：</p>
+<pre><code class="language-mermaid">stateDiagram
+
+[*] --&gt; 执行一个宏任务
+执行一个宏任务 --&gt; 执行所有微任务
+执行所有微任务 --&gt; 检查是否需要重新渲染
+
+检查是否需要重新渲染 --&gt;进入下一个周期: no
+检查是否需要重新渲染 --&gt; 执行requestAnimationFrame回调: yes
+执行requestAnimationFrame回调 --&gt; 执行重新渲染
+执行重新渲染 --&gt; 检查当前帧是否有空闲时间
+检查当前帧是否有空闲时间 --&gt; 执行requestIdleCallback回调: yes
+检查当前帧是否有空闲时间 --&gt; 进入下一个周期: no
+执行requestIdleCallback回调 --&gt; 进入下一个周期
+
+
+</code></pre>
+<p>页面的交互、动画等本质上都是由一帧帧渲染帧组成的，以 60HZ 的刷新率为例，一帧的渲染时长应当是 16.66 ms 左右，如果超过这段时间没有绘制完成渲染帧，那么就会导致“丢帧”，在页面上体现为动画卡顿、输入延迟等问题。</p>
+<h3 id="_9">事件循环中的阻塞</h3>
+<p>在事件循环机制中，常见的造成主线程阻塞的原因有：
+- <strong>长任务</strong>：长时间运行的同步任务，会阻塞主线程，从而阻塞渲染
+- <strong>微任务</strong>：由于一个事件循环周期内需要执行完所有微任务，因此过多的微任务也会阻塞渲染</p>
+<p>可以思考下，下面两种情况哪种会导致页面卡顿：</p>
+<pre><code class="language-javascript">function runMicrotask(){
+    Promise.resolve().then(res=&gt;{
+        runMicrotask()
+    })
+}
+
+function runMacrotask(){
+ setTimeout(()=&gt;{
+     runMacrotask()
+ }, 0)   
+}
+</code></pre>
+<p>答案显然是 <code>runMicrotask</code>，而 <code>runMacrotask</code> 函数虽然会一直创建宏任务，但是由于每个周期只执行一个宏任务，因此并不会阻塞渲染。</p>
+<blockquote>
+<p>题外话：执行 <code>runMicrotask</code> 后，当前标签页出现卡顿甚至卡死的情况，但是切换到另一个 tab 却发现页面正常且流程，这正好体现了我们前面章节所说的浏览器多进程架构的优异性。</p>
+</blockquote>
+<p>事实上，如果对 <code>runMacrotask</code> 稍加改造，那么就可以实现一个简易的<strong>时间切片</strong>，<strong>时间切片</strong>常用于优化<strong>长任务</strong>，例如 React 18 的调度系统就采用时间切片来优化性能。</p>
+<p>下面实现一个简单的时间切片功能：</p>
+<pre><code class="language-javascript">function runMacrotask(callback){
+ let startTime = Date.now()
+ let currentTime = Date.now()
+ let hasTask = true
+ while(currentTime - startTime &lt; 5 &amp;&amp; hasTask){
+     currentTime = Date.now()
+     hasTask = callback()
+ }  
+ if(hasTask){
+     console.log('暂停执行，释放主线程')
+     setTimeout(()=&gt;runMacrotask(callback), 10)
+ }
+}
+
+let i = 0
+runMacrotask(()=&gt;{
+  i++
+  return i&lt;1e6
+})
+</code></pre>
+<p>时间切片将长任务拆分成多个小任务并间隔执行，避免长时间连续地占用主线程，导致阻塞渲染。当然优化阻塞的方法有很多，比如使用 web worker，但是我们本章不关注性能优化的具体实现，而是关注于浏览器底层机制，毕竟掌握好底层原理，那么自然就能很容易找到和理解对应的优化方法。</p>
+<h3 id="_10">空闲时间</h3>
+<p>前面我们总结了常见的阻塞渲染的因素，这些因素可能会导致浏览器无法及时地绘制渲染帧，那么如果浏览器提前绘制好了渲染帧呢？</p>
+<p>事实上，根据 HTML 规范，浏览器会记录上一次渲染的时间，当当前周期的渲染帧绘制完成后，会将当前时间和上一次渲染的时间都差值与刷新率的渲染帧时间比较。例如上一次渲染的时间戳是 5，当前渲染完后的时间是 15，用户屏幕刷新率是 60 HZ，即渲染帧时间是 16.66 ms，那么剩余时间就有 6.66 ms（16.66 ms - （15 ms - 5 ms） = 6.66 ms）, 那么这 6.66 ms 的剩余时间就称为<strong>空闲时间</strong>。</p>
+<p>如果当前周期存在空闲时间，并且执行栈、宏任务队列和微任务队列都为空，那么浏览器就会利用这段时间做一些内部，例如进行主动 GC，JS 也可以通过 <code>requestIdleCallback</code> 来利用这段时间来执行一些低优先级的任务。</p>
+<h2 id="nodejs">NodeJs 中的事件循环机制</h2>
+<h3 id="libuv">Libuv</h3>
+<p>Nodejs 底层是基于 C++和 V8 引擎实现的，和浏览器一样，Nodejs 也是以单线程的方式执行 JS，但是 Nodejs 的事件循环机会是基于 libuv 实现的。</p>
+<p>在 Nodejs 中，事件循环机制的异步任务是通过 libuv 的线程池来实现的，具体来说，当执行一个异步 API 时，Nodejs 会交由 libuv 线程池中的线程执行，当异步 API 执行完毕时线程池将其回调入队，等待主线程执行。</p>
+<h3 id="_11">事件循环机制</h3>
+<p>Nodejs 的事件循环机制和浏览器中的事件循环机制有很大的不同，Nodejs 的事件循环机制分为六个阶段。</p>
+<pre><code>   ┌───────────────────────────┐
+┌─&gt;│           timers          │
+│  └─────────────┬─────────────┘
+│  ┌─────────────┴─────────────┐
+│  │     pending callbacks     │
+│  └─────────────┬─────────────┘
+│  ┌─────────────┴─────────────┐
+│  │       idle, prepare       │
+│  └─────────────┬─────────────┘      ┌───────────────┐
+│  ┌─────────────┴─────────────┐      │   incoming:   │
+│  │           poll            │&lt;─────┤  connections, │
+│  └─────────────┬─────────────┘      │   data, etc.  │
+│  ┌─────────────┴─────────────┐      └───────────────┘
+│  │           check           │
+│  └─────────────┬─────────────┘
+│  ┌─────────────┴─────────────┐
+└──┤      close callbacks      │
+   └───────────────────────────┘
+
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>timers</td>
+<td>执行 <code>setTimeout</code>、<code>setInterval()</code> 时间到期后的回调。</td>
+</tr>
+<tr>
+<td>pending callback</td>
+<td>执行推迟到下一次循环周期的 I/O 回调</td>
+</tr>
+<tr>
+<td>idle, prepare</td>
+<td>nodejs 内部使用</td>
+</tr>
+<tr>
+<td>poll</td>
+<td>检索新的 I/O 事件；执行 I/O 相关回调（几乎所有回调，除了关闭回调、由定时器调度的回调和 <code>setImmediate()</code>）；node 将在适当的时候在此处阻塞。</td>
+</tr>
+<tr>
+<td>check</td>
+<td>执行 <code>setImmediate</code> 的回调</td>
+</tr>
+<tr>
+<td>close callback</td>
+<td>一些关闭回调，例如 <code>socket.on('close', ...)</code></td>
+</tr>
+<tr>
+<td><strong>timers</strong></td>
+<td></td>
+</tr>
+<tr>
+<td>timers 阶段会执行定时器到达阈值的回调，需要注意的是，无论是浏览器环境还是 Nodejs 中，定时器都不是一定按照设置的阈值准时执行回调的，这主要是因为定时器回调的执行可能会被阻塞。</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>pending callback</strong>
+某些系统操作的回调可能会推迟到下一次循环周期中的 pending callback 阶段执行，例如TCP 套接字错误的回调，这种方式能够让回调在稳定的环境中执行。</p>
+<p><strong>poll</strong>（轮询）
+poll阶段有两个主要功能：
+- 计算它应该阻塞和轮询 I/O 多长时间，然后
+- 处理轮询队列中的事件。
+大部分的回调都在这个阶段执行。</p>
+<p><strong>check</strong>
+这个阶段专门用于执行 <code>setImmediate</code> 的回调</p>
+<p><strong>process.nextTick</strong>
+<code>process.nextTick</code> 事实上优先级非常高，比 <code>setImmediate</code> 还高，<code>nextTick</code> 这个方法名具有一定的误导性，然而由于历史的原因无法修改。</p>
+<p><code>process.nextTick</code> 的回调不依赖事件循环机制执行，事实上，<code>process.nextTick</code> 的回调会在当前操作执行完后立即执行，无论当前处于事件循环的哪一个阶段。</p>
+<h3 id="_12">事件循环中的阻塞</h3>
+<p>基于 Nodejs 事件循环的特性，常见的阻塞场景有：
+1. 同步API 导致的主线程阻塞
+2. 线程池中的线程被耗尽
+3. 线程池中的线程被长时间执行</p>
+<p>同步API（如 fs. readFileSync）会直接阻塞 Nodejs 的执行，因此通常情况下应当优先采用事件驱动的异步 API。</p>
+<p>另外两种常见的阻塞场景是线程池被阻塞，这很好理解，线程池中的线程是有限的，如果短时间内产生大量的异步API，或者异步任务执行时间过长，那么线程池中的线程就很容易被耗尽，未被分配的异步任务就需要排队等待，从而影响 Nodejs 服务器的吞吐性能。</p>
+<p>通过这种基于事件循环的单线程模型，Nodejs 可以很好地处理 I/O 密集型任务，但是不适合处理 CPU 密集型任务。但是优化的办法还是有的，可以通过 child_process 来创建子进程或者通过 web worker 创建工作线程的方式来优化。</p>
+<h1 id="_13">参考</h1>
+<p><a href="https://nodejs.cn/en/learn/asynchronous-work/dont-block-the-event-loop">Node.js 中文网 — 不要阻塞事件循环（或工作池）</a>
+https://html.spec.whatwg.org/multipage/parsing.html
+https://tc39.es/ecma262/</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.92b07e13.min.js"></script>
+      
+    
+  </body>
+</html>
