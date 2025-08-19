@@ -1,0 +1,14 @@
+site_name: 余烬的个人博客
+site_url: https://www.yujin123.cn
+theme:
+  name: material
+
+nav:
+  - 浏览器篇:
+    - 深入浏览器引擎 I：从多进程架构到渲染引擎: 浏览器篇/深入浏览器引擎 I：从多进程架构到渲染引擎.md
+    - 深入浏览器引擎 II：HTML 解析全流程——从字节流到 DOM 构建: 浏览器篇/深入浏览器引擎 II：HTML 解析全流程——从字节流到 DOM 构建.md
+    - 深入浏览器引擎 III：Chromium分层合成 vs Firefox WebRender的GPU革命: 浏览器篇/深入浏览器引擎 III：Chromium分层合成 vs Firefox WebRender的GPU革命.md
+    - 深入浏览器引擎 IV：V8 垃圾回收机制: 浏览器篇/深入浏览器引擎 IV：V8 垃圾回收机制.md
+
+  - 深入JavaScript篇:
+    - 深入JavaScript I：从规范中看JavaScript运行时机制: 深入JavaScript篇/深入JavaScript I：从规范中看JavaScript运行时机制.md

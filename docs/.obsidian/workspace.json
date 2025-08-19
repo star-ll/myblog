@@ -1,0 +1,177 @@
+{
+  "main": {
+    "id": "386e36b6110e3ad0",
+    "type": "split",
+    "children": [
+      {
+        "id": "9610a1aa33f13bda",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "d8e30aae2d1eaf11",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "新标签页"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "90d8dfac21567a27",
+    "type": "split",
+    "children": [
+      {
+        "id": "2ded15aee04a0f08",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "993818c319a09be7",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "文件列表"
+            }
+          },
+          {
+            "id": "6eb117be9502e2d7",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "搜索"
+            }
+          },
+          {
+            "id": "8d3867d19a24bb43",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "书签"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "d92160bfcbd13226",
+    "type": "split",
+    "children": [
+      {
+        "id": "75e5b63853ffebd7",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "cb8afc8ac8d10f84",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "反向链接"
+            }
+          },
+          {
+            "id": "2a220551ed08ecba",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "出链"
+            }
+          },
+          {
+            "id": "1bb7be70facda72c",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "标签"
+            }
+          },
+          {
+            "id": "779c474cc7ab9f3a",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "大纲"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false
+    }
+  },
+  "active": "d8e30aae2d1eaf11",
+  "lastOpenFiles": [
+    "浏览器篇/深入浏览器引擎 I：从多进程架构到渲染引擎.md",
+    "浏览器篇/深入浏览器引擎 II：HTML 解析全流程——从字节流到 DOM 构建.md",
+    "浏览器篇/深入浏览器引擎 III：Chromium分层合成 vs Firefox WebRender的GPU革命.md",
+    "浏览器篇/深入浏览器引擎 IV：V8 垃圾回收机制.md",
+    "浏览器篇/深入浏览器引擎V：JavaScript编译器.md",
+    "浏览器篇/05-深入浏览器引擎V：JavaScript编译器.md",
+    "浏览器篇/04-深入浏览器引擎 IV：V8 垃圾回收机制.md",
+    "浏览器篇/03-深入浏览器引擎 III：Chromium分层合成 vs Firefox WebRender的GPU革命.md",
+    "浏览器篇/02-深入浏览器引擎 II：HTML 解析全流程——从字节流到 DOM 构建.md",
+    "浏览器篇/01-深入浏览器引擎 I：从多进程架构到渲染引擎.md"
+  ]
+}
